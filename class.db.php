@@ -3,11 +3,11 @@ class db extends PDO {
 
 /* SETTINGS START */
 	private $connection = array(
-    	'default' => array( 	'host' => 'localhost',
-				'dbname' => 'my_database',
-				'charset' => 'utf8',
-				'user' => 'username',
-				'password' => 'p4ssw0rd'
+    		'default' => array( 	'host' => 'localhost',
+					'dbname' => 'my_database',
+					'charset' => 'utf8',
+					'user' => 'username',
+					'password' => 'p4ssw0rd'
 		),
 		'development' => array(	'host' => 'localhost',
 					'dbname' => 'dev_database',
