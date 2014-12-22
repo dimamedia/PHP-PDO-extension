@@ -3,24 +3,24 @@ class db extends PDO {
 
 /* SETTINGS START */
 	private $connection = array(
-    'default' => array( 'host' => 'localhost',
-                        'dbname' => 'my_database',
-                        'charset' => 'utf8',
-                        'user' => 'username',
-                        'password' => 'p4ssw0rd'
-											),
+    	'default' => array( 'host' => 'localhost',
+        	                'dbname' => 'my_database',
+        	                'charset' => 'utf8',
+            	            'user' => 'username',
+                	        'password' => 'p4ssw0rd'
+		),
 		'development' => array(	'host' => 'localhost',
-												'dbname' => 'dev_database',
-												'charset' => 'utf8',
-												'user' => 'username',
-												'password' => 'p4ssw0rd'
-											)
+								'dbname' => 'dev_database',
+								'charset' => 'utf8',
+								'user' => 'username',
+								'password' => 'p4ssw0rd'
+		)
 	);
 						
 	private $options = array(	PDO::ATTR_PERSISTENT => true, 
 								PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
 	);
-
+	
 /* SETTINGS END */
 
 	private $error;
@@ -125,9 +125,9 @@ class db extends PDO {
 			$pdostmt = $this->prepare($this->sql);
 			if($pdostmt->execute($this->bind) !== false) {
 				if(preg_match("/^(".implode("|", array("select", "describe", "pragma")).") /i", $this->sql))
-          return $pdostmt->fetchAll(PDO::FETCH_ASSOC);
+					return $pdostmt->fetchAll(PDO::FETCH_ASSOC);
 				elseif(preg_match("/^(".implode("|", array("delete", "insert", "update")).") /i", $this->sql))
-          return $pdostmt->rowCount();
+					return $pdostmt->rowCount();
 			}
 		} catch (PDOException $e) {
 			$this->error = $e->getMessage();	
@@ -137,8 +137,8 @@ class db extends PDO {
 	}
 
 	public function select($table, $where="", $bind="", $fields="*", $limit="") {
-		$sql = "SELECT " . $fields . " FROM " . $table;
-		if(!empty($where)) $sql .= " WHERE " . $where;
+		$sql = "SELECT ".$fields." FROM ".$table;
+		if(!empty($where)) $sql .= " WHERE ".$where;
 		if(!empty($limit)) $sql .= " LIMIT $limit";
 		$sql .= ";";
 		return $this->run($sql, $bind);
@@ -150,8 +150,7 @@ class db extends PDO {
 
 		$sql = "UPDATE ".$table." SET ";
 		for($f = 0; $f < $fieldSize; ++$f) {
-			if($f > 0)
-				$sql .= ", ";
+			if($f > 0) $sql .= ", ";
 			$sql .= $fields[$f]." = :update_".$fields[$f]; 
 		}
 		$sql .= " WHERE ".$where.";";
