@@ -3,23 +3,23 @@ class db extends PDO {
 
 /* SETTINGS START */
 	private $connection = array(
-    	'default' => array( 'host' => 'localhost',
-							'dbname' => 'my_database',
-							'charset' => 'utf8',
-							'user' => 'username',
-							'password' => 'p4ssw0rd'
+    	'default' => array( 	'host' => 'localhost',
+				'dbname' => 'my_database',
+				'charset' => 'utf8',
+				'user' => 'username',
+				'password' => 'p4ssw0rd'
 		),
 		'development' => array(	'host' => 'localhost',
-								'dbname' => 'dev_database',
-								'charset' => 'utf8',
-								'user' => 'username',
-								'password' => 'p4ssw0rd'
+					'dbname' => 'dev_database',
+					'charset' => 'utf8',
+					'user' => 'username',
+					'password' => 'p4ssw0rd'
 		)
 	);
 						
 	private $options = array(	PDO::ATTR_PERSISTENT => true, 
-								PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-	);
+					PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+		);
 	
 /* SETTINGS END */
 
@@ -92,8 +92,7 @@ class db extends PDO {
 	private function filter($table, $info) { // Check that required fields in $info exsist in the table
 		if(false !== ($list = $this->run("DESCRIBE $table"))) {
 			$fields = array();
-			foreach($list as $record)
-				$fields[] = $record['Field'];
+			foreach($list as $record) $fields[] = $record['Field'];
 			return array_values(array_intersect($fields, array_keys($info)));
 		}
 		return array();
@@ -111,8 +110,7 @@ class db extends PDO {
 		$fields = $this->filter($table, $info);
 		$sql = "INSERT INTO ".$table." (".implode($fields, ", ").") VALUES (:".implode($fields, ", :").");";
 		$bind = array();
-		foreach($fields as $field)
-			$bind[":$field"] = $info[$field];
+		foreach($fields as $field) $bind[":$field"] = $info[$field];
 		return $this->run($sql, $bind);
 	}
 
