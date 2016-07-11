@@ -2,25 +2,9 @@
 class db extends PDO {
 
 /* SETTINGS START */
-	private $connection = array(
-    		'default' => array( 	'host' => 'localhost',
-					'dbname' => 'my_database',
-					'charset' => 'utf8',
-					'user' => 'username',
-					'password' => 'p4ssw0rd'
-		),
-		'development' => array(	'host' => 'localhost',
-					'dbname' => 'dev_database',
-					'charset' => 'utf8',
-					'user' => 'username',
-					'password' => 'p4ssw0rd'
-		)
-	);
-						
 	private $options = array(	PDO::ATTR_PERSISTENT => true, 
 					PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
 		);
-	
 /* SETTINGS END */
 
 	private $error;
@@ -29,10 +13,11 @@ class db extends PDO {
 	private $errorCallbackFunction;
 	private $errorMsgFormat;
 	
-	public function __construct($db="default") {
-		$dsn = 'mysql:host='.$this->connection[$db]['host'].';dbname='.$this->connection[$db]['dbname'].';charset='.$this->connection[$db]['charset'];
-		$user = $this->connection[$db]['user'];
-		$passwd = $this->connection[$db]['password'];
+	public function __construct($db) {
+		// $db = array(host, dbname, user, password);
+		$dsn = 'mysql:host='.$db[0].';dbname='.$db[1].';charset=utf8';
+		$user = $db[2];
+		$passwd = $db[3];
 
 		try {
 			parent::__construct($dsn, $user, $passwd, $this->options);
@@ -84,10 +69,6 @@ class db extends PDO {
 		}	
 	}
 
-	public function delete($table, $where, $bind="") {
-		$sql = "DELETE FROM ".$table." WHERE ".$where.";";
-		$this->run($sql, $bind);
-	}
 
 	private function filter($table, $info) { // Check that required fields in $info exsist in the table
 		if(false !== ($list = $this->run("DESCRIBE $table"))) {
@@ -104,14 +85,6 @@ class db extends PDO {
 			else $bind = array();
 		}
 		return $bind;
-	}
-
-	public function insert($table, $info) {
-		$fields = $this->filter($table, $info);
-		$sql = "INSERT INTO ".$table." (".implode($fields, ", ").") VALUES (:".implode($fields, ", :").");";
-		$bind = array();
-		foreach($fields as $field) $bind[":$field"] = $info[$field];
-		return $this->run($sql, $bind);
 	}
 
 	public function run($sql, $bind="") {
@@ -132,6 +105,14 @@ class db extends PDO {
 			$this->debug();
 			return false;
 		}
+	}
+
+	public function insert($table, $info) {
+		$fields = $this->filter($table, $info);
+		$sql = "INSERT INTO ".$table." (".implode($fields, ", ").") VALUES (:".implode($fields, ", :").");";
+		$bind = array();
+		foreach($fields as $field) $bind[":$field"] = $info[$field];
+		return $this->run($sql, $bind);
 	}
 
 	public function select($table, $where="", $bind="", $fields="*", $limit="") {
@@ -158,5 +139,11 @@ class db extends PDO {
 		
 		return $this->run($sql, $bind);
 	}
+	
+	public function delete($table, $where, $bind="") {
+		$sql = "DELETE FROM ".$table." WHERE ".$where.";";
+		$this->run($sql, $bind);
+	}
+
 }	
 ?>
