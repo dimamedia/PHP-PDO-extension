@@ -58,13 +58,13 @@ class db extends PDO {
 		}
 	}
 	
-	public function setErrorCallbackFunction($errorCallbackFunction, $errorMsgFormat="html") {
+	public function setErrorCallbackFunction($errorCallbackFunction, $errorMsgFormat="text") {
 		// Variable functions won't work with language constructs such as echo and print, so these are replaced with print_r.
 		if(in_array(strtolower($errorCallbackFunction), array("echo", "print"))) $errorCallbackFunction = "print_r";
 
 		if(function_exists($errorCallbackFunction)) {
 			$this->errorCallbackFunction = $errorCallbackFunction;	
-			if(!in_array(strtolower($errorMsgFormat), array("html", "text"))) $errorMsgFormat = "html";
+			if(!in_array(strtolower($errorMsgFormat), array("html", "text"))) $errorMsgFormat = "text";
 			$this->errorMsgFormat = $errorMsgFormat;	
 		}	
 	}
@@ -97,7 +97,9 @@ class db extends PDO {
 			if($pdostmt->execute($this->bind) !== false) {
 				if(preg_match("/^(".implode("|", array("select", "describe", "pragma")).") /i", $this->sql))
 					return $pdostmt->fetchAll(PDO::FETCH_ASSOC);
-				elseif(preg_match("/^(".implode("|", array("delete", "insert", "update")).") /i", $this->sql))
+				elseif(preg_match("/^(".implode("|", array("insert")).") /i", $this->sql))
+					return $this->lastInsertId();
+				elseif(preg_match("/^(".implode("|", array("delete", "update")).") /i", $this->sql))
 					return $pdostmt->rowCount();
 			}
 		} catch (PDOException $e) {
